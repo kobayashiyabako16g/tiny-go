@@ -1,0 +1,34 @@
+export CGO_ENABLED=0
+
+# ==========================
+# Project overall
+# ==========================
+
+.DEFAULT_GOAL := help
+.PHONY: help
+help: ## Show help messages
+	@echo ''
+	@grep -E '^[%/0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}'
+	@echo ''
+
+# ==========================
+# Build
+# ==========================
+
+.PHONY: build
+build: ## Build app (linux amd64) 
+	GOOS=linux GOARCH=amd64 go build -tags timetzdata -o ./bin/app ./cmd/*
+
+
+# ==========================
+# Dev 
+# ==========================
+
+.PHONY: test
+test: ## Test (go test)
+	go test $(shell go list ${MAKEFILE_DIR}/...)
+
+.PHONY: vet
+vet: ## Vet (go vet)
+	go vet ./...
+
