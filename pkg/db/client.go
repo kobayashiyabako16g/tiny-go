@@ -23,3 +23,7 @@ func NewClient(driver string, name string) (client *Client, err error) {
 
 	return client, nil
 }
+
+func (c Client) Close() {
+	c.Close()
+}
