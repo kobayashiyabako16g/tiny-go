@@ -1,4 +1,7 @@
 export CGO_ENABLED=0
+# Database
+DB_FILE = ./db/app.db
+SCHEMA_FILE = ./db/schema.sql
 
 # ==========================
 # Project overall
@@ -31,4 +34,12 @@ test: ## Test (go test)
 .PHONY: vet
 vet: ## Vet (go vet)
 	go vet ./...
+
+# ==========================
+# Database 
+# ==========================
+.PHONY: initSQLite
+initSQLite: ## Init SQLite3 (dependency sqlite cli)
+	sqlite3 $(DB_FILE) < $(SCHEMA_FILE)
+	@echo "✅ Applied schema.sql to SQLite DB '$(DB_FILE)'."
 
