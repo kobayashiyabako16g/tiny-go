@@ -1,4 +1,7 @@
-export CGO_ENABLED=0
+# Default Go BUILD
+GOOS   ?= $(shell go env GOOS)
+GOARCH ?= $(shell go env GOARCH)
+CGO_ENABLED ?= 0
 # Database
 DB_FILE = ./db/app.db
 SCHEMA_FILE = ./db/schema.sql
@@ -19,9 +22,13 @@ help: ## Show help messages
 # ==========================
 
 .PHONY: build
-build: ## Build app (linux amd64) 
-	GOOS=linux GOARCH=amd64 go build -tags timetzdata -o ./bin/app ./cmd/*
+build: ## Build app (ex: make build GOOS=linux GOARCH=amd64) 
+	@echo "Building for GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED)"
+	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) go build -tags timetzdata -o ./bin/app ./cmd/*
 
+.PHONY: clean
+clean:
+	rm -f bin/*
 
 # ==========================
 # Dev 

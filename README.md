@@ -70,3 +70,15 @@ Open a `.go` file in Neovim and check that autocompletion, go-to-definition, etc
 - [gopls Documentation](https://github.com/golang/tools/tree/master/gopls)
 - [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
 
+
+## Development
+### tool install
+```sh
+go get -u tool
+```
+
+### local
+hotreload
+```sh
+CGO_ENABLED=1 go tool air
+```
