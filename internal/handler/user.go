@@ -7,7 +7,7 @@ import (
 
 	"github.com/kobayashiyabako16g/tiny-go/internal/domain/model"
 	"github.com/kobayashiyabako16g/tiny-go/internal/domain/repository"
-	"github.com/kobayashiyabako16g/tiny-go/pkg/log"
+	"github.com/kobayashiyabako16g/tiny-go/pkg/logger"
 )
 
 type User interface {
@@ -34,19 +34,19 @@ func (h *userHandler) GetUser() http.HandlerFunc {
 
 		id, err := strconv.Atoi(r.PathValue("id"))
 		if err != nil {
-			log.Logger.Info("Bad Requset", "info", err)
+			logger.Info(ctx, "Bad Requset", err)
 			http.Error(w, "Bad Requset", http.StatusBadRequest)
 			return
 		}
 
 		user, err := h.users.FindById(ctx, id)
 		if err != nil {
-			log.Logger.Error("Repository Error", "error", err)
+			logger.Error(ctx, "Repository Error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 		if user == nil {
-			log.Logger.Info("Not Found")
+			logger.Info(ctx, "Not Found")
 			http.Error(w, "Not Found", http.StatusNotFound)
 			return
 		}
@@ -59,7 +59,7 @@ func (h *userHandler) GetUser() http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
-			log.Logger.Error("Failed to write response", "error", err)
+			logger.Error(ctx, "Failed to write response", err)
 			http.Error(w, "Failed to write response", http.StatusInternalServerError)
 			return
 		}

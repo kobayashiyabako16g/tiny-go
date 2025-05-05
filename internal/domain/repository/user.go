@@ -6,7 +6,7 @@ import (
 
 	"github.com/kobayashiyabako16g/tiny-go/internal/domain/model"
 	"github.com/kobayashiyabako16g/tiny-go/pkg/db"
-	"github.com/kobayashiyabako16g/tiny-go/pkg/log"
+	"github.com/kobayashiyabako16g/tiny-go/pkg/logger"
 )
 
 type Users interface {
@@ -24,7 +24,7 @@ func NewUsersRepository(db *db.Client) Users {
 func (r usersRepositroy) FindById(ctx context.Context, id int) (*model.User, error) {
 	stmt, err := r.db.PrepareContext(ctx, "SELECT id, name, email FROM users WHERE id = ?")
 	if err != nil {
-		log.Logger.Error("Database Error", "error", err)
+		logger.Error(ctx, "Database Error", err)
 		return nil, err
 	}
 	defer stmt.Close()
@@ -36,7 +36,7 @@ func (r usersRepositroy) FindById(ctx context.Context, id int) (*model.User, err
 			return nil, nil
 		}
 		// Error
-		log.Logger.Error("Database Error", "error", err)
+		logger.Error(ctx, "Database Error", err)
 		return nil, err
 	}
 

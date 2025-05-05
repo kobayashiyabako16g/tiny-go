@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -8,10 +9,11 @@ import (
 	"github.com/kobayashiyabako16g/tiny-go/internal/handler"
 	"github.com/kobayashiyabako16g/tiny-go/internal/handler/middleware"
 	"github.com/kobayashiyabako16g/tiny-go/pkg/db"
-	"github.com/kobayashiyabako16g/tiny-go/pkg/log"
+	"github.com/kobayashiyabako16g/tiny-go/pkg/logger"
 )
 
 func main() {
+	ctx := context.Background()
 	// db setup (ref: makefile)
 	client, err := db.NewClient("sqlite", "./db/app.db")
 	if err != nil {
@@ -30,7 +32,7 @@ func main() {
 	server := middleware.LogMiddleware(mux)
 	// server setup
 	port := ":8080"
-	log.Logger.Info(fmt.Sprintf("Starting server at http://localhost%s", port))
+	logger.Info(ctx, fmt.Sprintf("Starting server at http://localhost%s", port))
 	// server start
 	if err := http.ListenAndServe(port, server); err != nil {
 		panic(err)

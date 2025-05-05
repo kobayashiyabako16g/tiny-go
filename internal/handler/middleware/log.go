@@ -4,17 +4,18 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kobayashiyabako16g/tiny-go/pkg/log"
+	"github.com/kobayashiyabako16g/tiny-go/pkg/logger"
 )
 
 func LogMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		start := time.Now()
 		lrw := &loggingResponseWriter{ResponseWriter: w, statusCode: http.StatusOK}
 
 		next.ServeHTTP(lrw, r)
 
-		log.Logger.Info("HTTP Request",
+		logger.Info(ctx, "HTTP Request",
 			"method", r.Method,
 			"path", r.URL.Path,
 			"status", lrw.statusCode,

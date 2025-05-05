@@ -1,12 +1,13 @@
-package log
+package logger
 
 import (
+	"context"
 	"log/slog"
 	"os"
 	"strings"
 )
 
-var Logger *slog.Logger
+var logger *slog.Logger
 
 func init() {
 	level := getLogLevel(os.Getenv("LOG_LEVEL"))
@@ -20,7 +21,7 @@ func init() {
 		handler = slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: level})
 	}
 
-	Logger = slog.New(handler)
+	logger = slog.New(handler)
 }
 
 func getLogLevel(envLevel string) slog.Level {
@@ -35,4 +36,20 @@ func getLogLevel(envLevel string) slog.Level {
 		return slog.LevelInfo
 
 	}
+}
+
+func Debug(ctx context.Context, msg string, args ...any) {
+	logger.DebugContext(ctx, msg, args...)
+}
+
+func Info(ctx context.Context, msg string, args ...any) {
+	logger.InfoContext(ctx, msg, args...)
+}
+
+func Warn(ctx context.Context, msg string, args ...any) {
+	logger.WarnContext(ctx, msg, args...)
+}
+
+func Error(ctx context.Context, msg string, args ...any) {
+	logger.ErrorContext(ctx, msg, args...)
 }
