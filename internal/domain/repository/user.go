@@ -10,7 +10,8 @@ import (
 )
 
 type Users interface {
-	FindById(ctx context.Context, id int) (*model.User, error)
+	FindById(ctx context.Context, id int64) (*model.User, error)
+	Create(ctx context.Context, user *model.User) error
 }
 
 type usersRepositroy struct {
@@ -21,7 +22,7 @@ func NewUsersRepository(db *db.Client) Users {
 	return usersRepositroy{db}
 }
 
-func (r usersRepositroy) FindById(ctx context.Context, id int) (*model.User, error) {
+func (r usersRepositroy) FindById(ctx context.Context, id int64) (*model.User, error) {
 	stmt, err := r.db.PrepareContext(ctx, "SELECT id, name, email FROM users WHERE id = ?")
 	if err != nil {
 		logger.Error(ctx, "Database Error", err)
@@ -41,4 +42,28 @@ func (r usersRepositroy) FindById(ctx context.Context, id int) (*model.User, err
 	}
 
 	return &user, nil
+}
+
+func (r usersRepositroy) Create(ctx context.Context, user *model.User) error {
+	stmt, err := r.db.PrepareContext(ctx, "INSERT INTO users (name, email) VALUES (?, ?)")
+	if err != nil {
+		logger.Error(ctx, "Database Error", err)
+		return err
+	}
+	defer stmt.Close()
+
+	res, err := stmt.ExecContext(ctx, user.Name, user.Email)
+	if err != nil {
+		logger.Error(ctx, "Database Error", err)
+		return err
+	}
+
+	row, err := res.LastInsertId()
+	if err != nil {
+		logger.Error(ctx, "Database Error", err)
+		return err
+	}
+
+	user.Id = row
+	return nil
 }

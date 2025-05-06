@@ -12,6 +12,7 @@ import (
 
 type User interface {
 	GetUser() http.HandlerFunc
+	AddUser() http.HandlerFunc
 }
 
 type userHandler struct {
@@ -31,8 +32,12 @@ type response struct {
 func (h *userHandler) GetUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+			return
+		}
 
-		id, err := strconv.Atoi(r.PathValue("id"))
+		id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 		if err != nil {
 			logger.Info(ctx, "Bad Requset", err)
 			http.Error(w, "Bad Requset", http.StatusBadRequest)
@@ -55,6 +60,52 @@ func (h *userHandler) GetUser() http.HandlerFunc {
 			Status:  "ok",
 			Message: "Success Get User",
 			User:    *user,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(res); err != nil {
+			logger.Error(ctx, "Failed to write response", err)
+			http.Error(w, "Failed to write response", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func (h *userHandler) AddUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var user model.User
+
+		decoder := json.NewDecoder(r.Body)
+		if err := decoder.Decode(&user); err != nil {
+			logger.Info(ctx, "Binding Error", err)
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+			return
+		}
+		if !user.IsValidEmail() {
+			logger.Info(ctx, "Validation Error")
+			http.Error(w, "Bad Request (email)", http.StatusBadRequest)
+			return
+		}
+
+		// create User
+		err := h.users.Create(ctx, &user)
+		if err != nil {
+			logger.Info(ctx, "User Create Error")
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+
+		}
+
+		res := response{
+			Status:  "ok",
+			Message: "Success Create User",
+			User:    user,
 		}
 
 		w.Header().Set("Content-Type", "application/json")

@@ -12,4 +12,5 @@ func NewRouter(uh User) Router {
 
 func (r *Router) HandleRequest(mux *http.ServeMux) {
 	mux.Handle("/users/{id}", r.uh.GetUser())
+	mux.Handle("/users", r.uh.AddUser())
 }
