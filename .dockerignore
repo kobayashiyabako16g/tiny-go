@@ -1,0 +1,38 @@
+# Compiled binary files
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Git repository data
+.git
+.gitignore
+
+# Vendor directory (exclude if using Go modules and building inside Docker)
+vendor/
+
+# Editor and IDE settings
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Log and temporary files
+*.log
+tmp/
+*.tmp
+
+# Files not needed in the image
+docker-compose.yml
+Dockerfile
+
+# Test and coverage outputs
+coverage.out
+
