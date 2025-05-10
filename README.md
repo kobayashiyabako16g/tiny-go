@@ -72,6 +72,11 @@ Open a `.go` file in Neovim and check that autocompletion, go-to-definition, etc
 
 
 ## Development
+The working location is the `app` directory
+```sh
+cd app
+```
+
 ### tool install
 ```sh
 go get -u tool

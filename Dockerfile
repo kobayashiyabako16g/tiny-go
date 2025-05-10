@@ -6,7 +6,7 @@ FROM golang:1.24-alpine AS builder
 ARG WORK_DIR
 WORKDIR ${WORK_DIR}
 
-COPY . .
+COPY ./app .
 RUN apk upgrade --update && apk add --no-cache gcc musl-dev make git curl
 RUN make build
 
