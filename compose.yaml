@@ -1,11 +1,32 @@
-service:
+x-shared-env: &shared-env
+  DB_USER: ${DB_USER:-postgres}
+  DB_PASSWORD: ${DB_PASSWORD:-postgres}
+  DB_NAME: ${DB_NAME:-app}
+
+services:
   api:
     build:
       context: .
       target: builder
     working_dir: /go/src/app
     command: ["go", "tool", "air -d"]
+    environment:
+      <<: *shared-env
+      APP_ENV: developement
     volumes:
       - ./app:/go/src/app
     ports:
       - 8080:8080
+
+  db:
+    image: postgres:alpine
+    environment:
+      <<: *shared-env
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-app}
+    volumes:
+      - ./db/postgres/data:/var/lib/postgresql/data
+      - ./db/postgres/init:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432

@@ -22,7 +22,7 @@ help: ## Show help messages
 # ==========================
 
 .PHONY: build
-build: ## Build app (ex: make build GOOS=linux GOARCH=amd64) 
+build: ## Build app (ex: make build GOOS=linux GOARCH=amd64)
 	@echo "Building for GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED)"
 	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) go build -tags timetzdata -o ./bin/app ./cmd/*
 
@@ -31,7 +31,7 @@ clean:
 	rm -f bin/*
 
 # ==========================
-# Dev 
+# Dev
 # ==========================
 
 .PHONY: test
@@ -43,10 +43,14 @@ vet: ## Vet (go vet)
 	go vet ./...
 
 # ==========================
-# Database 
+# Database
 # ==========================
 .PHONY: initSQLite
 initSQLite: ## Init SQLite3 (dependency sqlite cli)
 	sqlite3 $(DB_FILE) < $(SCHEMA_FILE)
 	@echo "✅ Applied schema.sql to SQLite DB '$(DB_FILE)'."
 
+.PHONY: initPostgres
+initPostgres: ## Init PostgreSQL (requires psql CLI)
+	spsql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(DB_NAME) -f $(SCHEMA_FILE)
+	@echo "✅ Applied schema.sql to PostgreSQL DB '$(DB_NAME)'."
