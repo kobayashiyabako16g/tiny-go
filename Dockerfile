@@ -10,6 +10,12 @@ COPY ./app .
 RUN apk upgrade --update && apk add --no-cache gcc musl-dev make git curl
 RUN make build
 
+FROM builder AS develop
+ARG WORK_DIR
+WORKDIR ${WORK_DIR}
+
+RUN go install tool
+
 # release
 FROM alpine:latest AS app
 ARG WORK_DIR
